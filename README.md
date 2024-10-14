@@ -28,6 +28,17 @@ Deploy the code, this will also update the HTML with the API Gateway URL:
 make upload-to-s3
 ```
 
+To **send events to Kineiss** run the following `make` command:
+```
+make kinesis-event-loop
+```
+This will send an event each key press to Kinesis, so the application can receive them.
+
+If you want to reset the commentary, ie delete everything from the LLMs memory, run this:
+```
+make truncate-dynamodb
+```
+
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.

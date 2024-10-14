@@ -92,6 +92,7 @@ export class FootballCommentaryStack extends cdk.Stack {
   new cdk.CfnOutput(this, "CloudFrontDistributionId", {value: cf.distributionId});
   new cdk.CfnOutput(this, "S3BucketName", {value: webHostingBucket.bucketName});
   new cdk.CfnOutput(this, "KinesisStreamName", {value: kinesisStream.streamName});
+  new cdk.CfnOutput(this, "TableName", {value: dynamoTable.tableName});
   }
   
 }

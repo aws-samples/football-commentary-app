@@ -13,6 +13,7 @@ API_GATEWAY_URL := $(shell jq -r '.$(STACK_NAME).ApiGatewayUrl' $(JSON_FILE))
 S3_BUCKET := $(shell jq -r '.$(STACK_NAME).S3BucketName' $(JSON_FILE))
 CLOUDFRONT_DISTRIBUTION_ID := $(shell jq -r '.$(STACK_NAME).CloudFrontDistributionId' $(JSON_FILE))
 KINESIS_STREAM_NAME := $(shell jq -r '.$(STACK_NAME).KinesisStreamName' $(JSON_FILE))
+TABLE_NAME := $(shell jq -r '.$(STACK_NAME).TableName' $(JSON_FILE))
 
 # Define targets that require JSON_FILE
 .PHONY: update-html upload-to-s3 invalidate-cloudfront kinesis-event-loop
@@ -43,6 +44,13 @@ kinesis-event-loop:
 		fi
 		@echo "Starting Kinesis event loop. Press any key to send the next event, or 'q' to quit."
 		@./send_kinesis_events.sh $(EVENTS_FILE) $(KINESIS_STREAM_NAME)
+
+# Truncate DynamoDB
+truncate-dynamodb:
+		@echo "Deleting every record from DynamoDB"
+		aws dynamodb delete-item --table-name $(TABLE_NAME) --key '{"id": {"S": "latest"}}'
+		@echo "The memory of the LLM generating the commentary has been reset."
+
 endif
 
 # Always available targets
