@@ -24,15 +24,12 @@
         }
     </style>
     <script>
-        const apiUrl = "https://yojevqpeek.execute-api.us-west-2.amazonaws.com/prod//display";
+        const apiUrl = "https://48updu650l.execute-api.us-west-2.amazonaws.com/prod//display";
         function fetchData() {
             fetch(apiUrl)
                 .then(response => response.json())
                 .then(data => {
-                    const comment = data.comment || 'No Commentary yet available';
-                    const timestamp = data.timestamp || 'No Timestamp available';
-                    document.getElementById('output').textContent = comment;
-                    document.getElementById('timestamp').textContent = timestamp;
+                    document.getElementById('output').textContent = JSON.stringify(data, null,2);
                 })
                 .catch(error => console.error('Error:', error));
         }
@@ -45,8 +42,6 @@
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="p-8 rounded-lg shadow-md max-w-2xl w-full text-center bg-green-500">
         <h1 class="text-2xl font-bold mb-4 text-gray-800">📣 Latest Commentary 🏟️</h1>
-        <div id="timestamp" class="bg-gray-50 p-4 rounded border border-gray-200 font-mono text-sm overflow-auto max-h-32">
-        </div>
         <div id="output" class="bg-gray-50 p-4 rounded border border-gray-200 font-mono text-sm overflow-auto max-h-96">
             Loading...
         </div>

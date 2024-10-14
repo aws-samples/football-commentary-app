@@ -5,7 +5,6 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cr from 'aws-cdk-lib/custom-resources';
 import * as lambdEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
@@ -57,13 +56,6 @@ export class FootballCommentaryStack extends cdk.Stack {
       },
     });
 
-    const htmlLambda = new lambda.Function(this, 'HtmlLambda', {
-      runtime: lambda.Runtime.PYTHON_3_9,
-      handler: 'index.handler',
-      timeout: cdk.Duration.minutes(2),
-      code: lambda.Code.fromAsset('lambda/html-lambda'),
-    });
-
     // Set up permissions
     kinesisStream.grantRead(ingestLambda);
     dynamoTable.grantReadData(getLambda);
@@ -77,8 +69,6 @@ export class FootballCommentaryStack extends cdk.Stack {
     // Create API Gateway
     const api = new apigateway.RestApi(this, 'SoccerApi');
 
-    api.root.addMethod('GET', new apigateway.LambdaIntegration(htmlLambda));
-    
     const displayResource = api.root.addResource('display');
     displayResource.addMethod('GET', new apigateway.LambdaIntegration(getLambda));
 
@@ -96,31 +86,12 @@ export class FootballCommentaryStack extends cdk.Stack {
       }
     });
 
-    // custom resource that will update the Html Lambda with the API URL once it is done
-    new cr.AwsCustomResource(this, 'UpdateLambdaEnv', {
-      onUpdate: {
-        service: 'Lambda',
-        action: 'updateFunctionConfiguration',
-        parameters: {
-          FunctionName: htmlLambda.functionName,
-          Environment: {
-            Variables: {
-              API_URL: api.url,
-            },
-          },
-        },
-        physicalResourceId: cr.PhysicalResourceId.of('UpdateLambdaEnv'),
-      },
-      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-        resources: [htmlLambda.functionArn],
-      }),
-    });
-
   // CDK Outputs
   new cdk.CfnOutput(this, "ApiGatewayUrl", {value: api.url});
   new cdk.CfnOutput(this, "CloudFrontEndpoint", {value: cf.distributionDomainName});
   new cdk.CfnOutput(this, "CloudFrontDistributionId", {value: cf.distributionId});
   new cdk.CfnOutput(this, "S3BucketName", {value: webHostingBucket.bucketName});
+  new cdk.CfnOutput(this, "KinesisStreamName", {value: kinesisStream.streamName});
   }
   
 }

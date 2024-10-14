@@ -1,5 +1,7 @@
 ## Football commentary stack
 
+![Football comentary in action](/img/screen.png)
+
 ### Requirements
 - AWS CDK
 - jq
