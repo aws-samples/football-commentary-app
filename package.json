@@ -20,7 +20,7 @@
     "typescript": "~5.6.2"
   },
   "dependencies": {
-    "aws-cdk-lib": "2.160.0",
+    "aws-cdk-lib": "2.185.0",
     "cargo-lambda-cdk": "^0.0.22",
     "constructs": "^10.0.0",
     "fs-extra": "^11.2.0",
